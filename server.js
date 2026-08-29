@@ -126,4 +126,4 @@ let shutdownHandle = () => {
 process.on("SIGINT", shutdownHandle);
 process.on("SIGTERM", shutdownHandle);
 
-server.listen(3000, () => console.log('Server online'));
+server.listen(process.env.PORT, "0.0.0.0", () => console.log('Server online'));
