@@ -33,14 +33,15 @@ con.query('select * from signs;', (error, results, fields) => {
 
 con.end();
 
-let autoSave = setTimeout(() => {
+let autoSave = setInterval(() => {
 	console.log("Auto Saving...");
 	loginSQL();
 
-	for (let element in newsigns) {
+	for (let element of newsigns) {
 		con.execute("insert into signs (sign1, sign2, sign3, sign4, sign5) values (?, ?, ?, ?, ?);", element, (err, res) => {if (err) throw err;});
 	}
 
+	con.commit();
 	con.end();
 
 	newsigns = [];
@@ -109,19 +110,20 @@ const server = http.createServer((req, res) => {
 });
 
 let shutdownHandle = () => {
-	clearTimeout(autoSave);
+	clearInterval(autoSave);
 	loginSQL();
 
-	for (let element in newsigns) {
+	for (let element of newsigns) {
 		con.execute("insert into signs (sign1, sign2, sign3, sign4, sign5) values (?, ?, ?, ?, ?);", element, (err, res) => {if (err) throw err;});
 	}
 
+	con.commit();
 	con.end();
-	console.log("Data saved, program terminated");
-	process.exit(0);
+	console.log("Data saved, program terminating...");
+	setTimeout(process.exit, 5000, 0);
 };
 
 process.on("SIGINT", shutdownHandle);
 process.on("SIGTERM", shutdownHandle);
 
-server.listen(process.env.PORT, "0.0.0.0", () => console.log('Server running on port 3000'));
+server.listen(3000, () => console.log('Server online'));
