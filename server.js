@@ -1,13 +1,51 @@
 import http from 'http';
+import mysql from 'mysql2';
 
 const NUM_SIGNS = 5;
 
-var signs = [
-	["A", "B", "C", "D", "E"],
-	["F", "G", "H", "I", "J"],
-	["K", "L", "M", "N", "O"],
-	["P", "Q", "R", "S", "T"]
-]
+var signs = [];
+var newsigns = [];
+
+let con;
+
+function loginSQL() {
+	con = mysql.createConnection({
+		host : process.env.MYSQLHOST,
+		port : process.env.MYSQLPORT,
+		user : process.env.MYSQLUSER,
+		password : process.env.MYSQLPASSWORD,
+		database : 'defaultdb'
+	});
+
+	con.connect((err) => {
+		if (err) throw err;
+	});
+}
+
+loginSQL();
+
+con.query('select * from signs;', (error, results, fields) => {
+	if (error) throw error;
+	for (let element of results) {
+		signs.append([element.sign1, element.sign2, element.sign3, element.sign4, element.sign5]);
+	}
+});
+
+con.end();
+
+let autoSave = setTimeout(() => {
+	console.log("Auto Saving...");
+	loginSQL();
+
+	for (let element in newsigns) {
+		con.execute("insert into signs (sign1, sign2, sign3, sign4, sign5) values (?, ?, ?, ?, ?);", element, (err, res) => {if (err) throw err;});
+	}
+
+	con.end();
+
+	newsigns = [];
+	console.log("Done");
+}, 600000);
 
 const server = http.createServer((req, res) => {
 	if (req.method === 'POST') {
@@ -47,6 +85,7 @@ const server = http.createServer((req, res) => {
 						throw new Error("Recieved Object does not contain a valid signs array");
 
 					signs.append(clientData.signs);
+					newsigns.append(clientData.signs);
 
  					res.writeHead(200, {'Content-Type': 'text/plain'});
  					res.end("Signs recieved");
@@ -69,4 +108,20 @@ const server = http.createServer((req, res) => {
 	}
 });
 
-server.listen(3000, () => console.log('Server running on port 3000'));
+let shutdownHandle = () => {
+	clearTimeout(autoSave);
+	loginSQL();
+
+	for (let element in newsigns) {
+		con.execute("insert into signs (sign1, sign2, sign3, sign4, sign5) values (?, ?, ?, ?, ?);", element, (err, res) => {if (err) throw err;});
+	}
+
+	con.end();
+	console.log("Data saved, program terminated");
+	process.exit(0);
+};
+
+process.on("SIGINT", shutdownHandle);
+process.on("SIGTERM", shutdownHandle);
+
+server.listen(process.env.PORT, "0.0.0.0", () => console.log('Server running on port 3000'));
