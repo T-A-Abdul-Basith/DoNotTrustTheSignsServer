@@ -1,0 +1,24 @@
+{
+  "name": "donottrustthesignsserver",
+  "version": "1.0.0",
+  "description": "A server for my game on Itch.io",
+  "keywords": [
+    "ServerForGame"
+  ],
+  "homepage": "https://github.com/T-A-Abdul-Basith/DoNotTrustTheSignsServer#readme",
+  "bugs": {
+    "url": "https://github.com/T-A-Abdul-Basith/DoNotTrustTheSignsServer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/T-A-Abdul-Basith/DoNotTrustTheSignsServer.git"
+  },
+  "license": "ISC",
+  "author": "T A Abdul Basith",
+  "type": "Javascript",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Hello, World\"",
+    "start": "node server.js"
+  }
+}
