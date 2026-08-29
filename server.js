@@ -27,7 +27,7 @@ loginSQL();
 con.query('select * from signs;', (error, results, fields) => {
 	if (error) throw error;
 	for (let element of results) {
-		signs.append([element.sign1, element.sign2, element.sign3, element.sign4, element.sign5]);
+		signs.push([element.sign1, element.sign2, element.sign3, element.sign4, element.sign5]);
 	}
 });
 
@@ -84,8 +84,8 @@ const server = http.createServer((req, res) => {
 					if (!("signs" in clientData) && !Array.isArray(clientData.signs) && clientData.length != NUM_SIGNS)
 						throw new Error("Recieved Object does not contain a valid signs array");
 
-					signs.append(clientData.signs);
-					newsigns.append(clientData.signs);
+					signs.push(clientData.signs);
+					newsigns.push(clientData.signs);
 
  					res.writeHead(200, {'Content-Type': 'text/plain'});
  					res.end("Signs recieved");

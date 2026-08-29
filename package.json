@@ -15,7 +15,7 @@
   },
   "license": "ISC",
   "author": "T A Abdul Basith",
-  "type": "Javascript",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Hello, World\"",
